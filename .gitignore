@@ -6,6 +6,7 @@ obj/
 .vs/
 *.user
 *.suo
+*.sln.docstates
 
 # Rider
 .idea/
@@ -17,5 +18,9 @@ obj/
 # Logs
 *.log
 
-# Others
+# Database
 *.db
+
+# OS files
+.DS_Store
+Thumbs.db

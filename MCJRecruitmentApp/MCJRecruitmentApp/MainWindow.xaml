@@ -1,12 +1,63 @@
 ﻿<Window x:Class="MCJRecruitmentApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MCJRecruitmentApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Recruitment System" Height="550" Width="1050">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
+        <!-- Contractor Section -->
+        <StackPanel Grid.Column="0" Margin="10">
+            <TextBlock Text="Contractors" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="First Name:" />
+            <TextBox x:Name="FirstNameInput" Margin="0,0,0,5"/>
+            <TextBlock Text="Last Name:" />
+            <TextBox x:Name="LastNameInput" Margin="0,0,0,5"/>
+            <TextBlock Text="Start Date:" />
+            <DatePicker x:Name="StartDateInput" Margin="0,0,0,5"/>
+            <TextBlock Text="Hourly Wage:" />
+            <TextBox x:Name="HourlyWageInput" Margin="0,0,0,10"/>
+
+            <Expander Header="Contractor Actions" IsExpanded="False" Margin="0,10,0,0">
+                <StackPanel>
+                    <Button Content="Add Contractor" x:Name="AddContractorButton" Height="30" Click="AddContractor_Click"/>
+                    <Button Content="Remove Contractor" x:Name="RemoveContractorButton" Height="30" Margin="0,0,0,5" Click="RemoveContractor_Click"/>
+                    <Button Content="Get Contractors" x:Name="GetContractorsButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Get Available Contractors" x:Name="GetAvailableContractorsButton" Height="30"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Contractor List" IsExpanded="False" Margin="0,10,0,0">
+                <ListBox x:Name="ContractorList" Height="100"/>
+            </Expander>
+        </StackPanel>
+
+        <!-- Job Section -->
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="Jobs" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Title:" />
+            <TextBox x:Name="JobTitleInput" Margin="0,0,0,5"/>
+            <TextBlock Text="Date:" />
+            <DatePicker x:Name="JobDateInput" Margin="0,0,0,5"/>
+            <TextBlock Text="Cost:" />
+            <TextBox x:Name="JobCostInput" Margin="0,0,0,10"/>
+
+            <Expander Header="Job Actions" IsExpanded="False" Margin="0,10,0,0">
+                <StackPanel>
+                    <Button Content="Add Job" x:Name="AddJobButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Assign Job" x:Name="AssignJobButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Complete Job" x:Name="CompleteJobButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Get Jobs" x:Name="GetJobsButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Get Unassigned Jobs" x:Name="GetUnassignedJobsButton" Height="30" Margin="0,0,0,5"/>
+                    <Button Content="Get Job By Cost" x:Name="GetJobByCostButton" Height="30"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Job List" IsExpanded="False" Margin="0,10,0,0">
+                <ListBox x:Name="JobList" Height="100"/>
+            </Expander>
+        </StackPanel>
     </Grid>
 </Window>

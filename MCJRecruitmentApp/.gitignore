@@ -1,0 +1,21 @@
+# Build
+bin/
+obj/
+
+# VS config
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+*.sln.iml
+
+# Backup
+*.bak
+
+# Logs
+*.log
+
+# Others
+*.db

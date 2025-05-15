@@ -20,12 +20,12 @@
             <TextBlock Text="Hourly Wage:" />
             <TextBox x:Name="HourlyWageInput" Margin="0,0,0,10"/>
 
-            <Expander Header="Contractor Actions" IsExpanded="False" Margin="0,10,0,0">
+            <Expander Header="Contractor Actions" IsExpanded="False">
                 <StackPanel>
                     <Button Content="Add Contractor" x:Name="AddContractorButton" Height="30" Click="AddContractor_Click"/>
                     <Button Content="Remove Contractor" x:Name="RemoveContractorButton" Height="30" Margin="0,0,0,5" Click="RemoveContractor_Click"/>
-                    <Button Content="Get Contractors" x:Name="GetContractorsButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Get Available Contractors" x:Name="GetAvailableContractorsButton" Height="30"/>
+                    <Button Content="Get Contractors" x:Name="GetContractorsButton" Height="30" Margin="0,0,0,5" Click="GetContractorsButton_Click"/>
+                    <Button Content="Get Available Contractors" x:Name="GetAvailableContractorsButton" Height="30" Click="GetAvailableContractorsButton_Click"/>
                 </StackPanel>
             </Expander>
 
@@ -38,7 +38,7 @@
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock Text="Jobs" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
             <TextBlock Text="Title:" />
-            <TextBox x:Name="JobTitleInput" Margin="0,0,0,5"/>
+            <TextBox x:Name="JobTitleInput"/>
             <TextBlock Text="Date:" />
             <DatePicker x:Name="JobDateInput" Margin="0,0,0,5"/>
             <TextBlock Text="Cost:" />
@@ -46,12 +46,21 @@
 
             <Expander Header="Job Actions" IsExpanded="False" Margin="0,10,0,0">
                 <StackPanel>
-                    <Button Content="Add Job" x:Name="AddJobButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Assign Job" x:Name="AssignJobButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Complete Job" x:Name="CompleteJobButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Get Jobs" x:Name="GetJobsButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Get Unassigned Jobs" x:Name="GetUnassignedJobsButton" Height="30" Margin="0,0,0,5"/>
-                    <Button Content="Get Job By Cost" x:Name="GetJobByCostButton" Height="30"/>
+                    <Button Content="Add Job" x:Name="AddJobButton" Height="30" Margin="0,0,0,5" Click="AddJobButton_Click"/>
+                    <Button Content="Assign Job" x:Name="AssignJobButton" Height="30" Margin="0,0,0,5" Click="AssignJobButton_Click"/>
+                    <Button Content="Complete Job" x:Name="CompleteJobButton" Height="30" Margin="0,0,0,5" Click="CompleteJobButton_Click"/>
+                    <Button Content="Get Jobs" x:Name="GetJobsButton" Height="30" Margin="0,0,0,5" Click="GetJobsButton_Click"/>
+                    <Button Content="Get Unassigned Jobs" x:Name="GetUnassignedJobsButton" Height="30" Margin="0,0,0,5" Click="GetUnassignedJobsButton_Click"/>
+
+                    <!-- Min/Max Cost for filtering -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="Min Cost:" Margin="0,0,5,0"/>
+                        <TextBox x:Name="MinCostInput" Width="70" Margin="0,0,10,0"/>
+                        <TextBlock Text="Max Cost:" Margin="0,0,5,0"/>
+                        <TextBox x:Name="MaxCostInput" Width="70"/>
+                    </StackPanel>
+
+                    <Button Content="Get Job By Cost" x:Name="GetJobByCostButton" Height="30" Click="GetJobByCostButton_Click"/>
                 </StackPanel>
             </Expander>
 

@@ -20,7 +20,7 @@
             <TextBlock Text="Hourly Wage:" />
             <TextBox x:Name="HourlyWageInput" Margin="0,0,0,10"/>
 
-            <Expander Header="Contractor Actions" IsExpanded="False">
+            <Expander x:Name="ContractorActionsExpander" Header="Contractor Actions" IsExpanded="False">
                 <StackPanel>
                     <Button Content="Add Contractor" x:Name="AddContractorButton" Height="30" Click="AddContractor_Click"/>
                     <Button Content="Remove Contractor" x:Name="RemoveContractorButton" Height="30" Margin="0,0,0,5" Click="RemoveContractor_Click"/>
@@ -29,7 +29,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander Header="Contractor List" IsExpanded="False" Margin="0,10,0,0">
+            <Expander x:Name="ContractorListExpander" Header="Contractor List" IsExpanded="False" Margin="0,10,0,0">
                 <ListBox x:Name="ContractorList" Height="100"/>
             </Expander>
         </StackPanel>
@@ -44,7 +44,7 @@
             <TextBlock Text="Cost:" />
             <TextBox x:Name="JobCostInput" Margin="0,0,0,10"/>
 
-            <Expander Header="Job Actions" IsExpanded="False" Margin="0,10,0,0">
+            <Expander x:Name="JobActionsExpander" Header="Job Actions" IsExpanded="False" Margin="0,10,0,0">
                 <StackPanel>
                     <Button Content="Add Job" x:Name="AddJobButton" Height="30" Margin="0,0,0,5" Click="AddJobButton_Click"/>
                     <Button Content="Assign Job" x:Name="AssignJobButton" Height="30" Margin="0,0,0,5" Click="AssignJobButton_Click"/>
@@ -64,7 +64,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander Header="Job List" IsExpanded="False" Margin="0,10,0,0">
+            <Expander x:Name="JobListExpander" Header="Job List" IsExpanded="False" Margin="0,10,0,0">
                 <ListBox x:Name="JobList" Height="100"/>
             </Expander>
         </StackPanel>

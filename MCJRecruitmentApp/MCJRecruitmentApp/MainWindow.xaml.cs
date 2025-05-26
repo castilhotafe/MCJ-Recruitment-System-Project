@@ -13,6 +13,28 @@ namespace MCJRecruitmentApp;
 
 public partial class MainWindow : Window
 {
+/* 
+Quick object structure reminder
+
+Contractor(string firstName, string lastName, DateTime startDate, decimal hourlyWage)
+firstName from FirstNameInput.Text
+lastName from LastNameInput.Text
+startDate from StartDateInput.Text or SelectedDate (converted to DateTime)
+hourlyWage from HourlyWageInput.Text (converted to decimal)
+
+Job(string title, DateTime date, decimal cost)
+title from JobTitleInput.Text
+date from JobDateInput.SelectedDate
+cost from JobCostInput.Text (converted to decimal)
+
+Stored in the back-end lists:
+contractorList → holds all Contractor objects
+jobList → holds all Job objects
+
+Shown in UI using:
+ContractorList.Items.Add(...)
+JobList.Items.Add(...)
+*/
     List<Contractor> contractorList = new List<Contractor>();
     List<Job> jobList = new List<Job>();
 

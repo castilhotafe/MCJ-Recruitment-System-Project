@@ -13,31 +13,30 @@ namespace MCJRecruitmentApp;
 
 public partial class MainWindow : Window
 {
-/* 
-Quick object structure reminder
+    /* 
+    Quick object structure reminder
 
-Contractor(string firstName, string lastName, DateTime startDate, decimal hourlyWage)
-firstName from FirstNameInput.Text
-lastName from LastNameInput.Text
-startDate from StartDateInput.Text or SelectedDate (converted to DateTime)
-hourlyWage from HourlyWageInput.Text (converted to decimal)
+    Contractor(string firstName, string lastName, DateTime startDate, decimal hourlyWage)
+    firstName from FirstNameInput.Text
+    lastName from LastNameInput.Text
+    startDate from StartDateInput.Text or SelectedDate (converted to DateTime)
+    hourlyWage from HourlyWageInput.Text (converted to decimal)
 
-Job(string title, DateTime date, decimal cost)
-title from JobTitleInput.Text
-date from JobDateInput.SelectedDate
-cost from JobCostInput.Text (converted to decimal)
+    Job(string title, DateTime date, decimal cost)
+    title from JobTitleInput.Text
+    date from JobDateInput.SelectedDate
+    cost from JobCostInput.Text (converted to decimal)
 
-Stored in the back-end lists:
-contractorList → holds all Contractor objects
-jobList → holds all Job objects
+    Stored in the back-end lists:
+    contractorList → holds all Contractor objects
+    jobList → holds all Job objects
 
-Shown in UI using:
-ContractorList.Items.Add(...)
-JobList.Items.Add(...)
-*/
-    List<Contractor> contractorList = new List<Contractor>();
-    List<Job> jobList = new List<Job>();
+    Shown in UI using:
+    ContractorList.Items.Add(...)
+    JobList.Items.Add(...)
+    */
 
+    private RecruitmentSystem recruitmentSystem = new RecruitmentSystem();
     public MainWindow()
     {
         InitializeComponent();
@@ -45,40 +44,38 @@ JobList.Items.Add(...)
 
     private void AddContractor_Click(object sender, RoutedEventArgs e)
     {
-        string firstName = FirstNameInput.Text.Trim().ToUpper();
-        string lastName = LastNameInput.Text.Trim().ToUpper();
-        string startDateText = StartDateInput.Text.Trim();
-        string hourlyWageText = HourlyWageInput.Text.Trim();
+        string inputFirstName = FirstNameInput.Text.Trim().ToUpper();
+        string inputLastName = LastNameInput.Text.Trim().ToUpper();
+        string inputStartDateText = StartDateInput.Text.Trim();
+        string inputHourlyWageText = HourlyWageInput.Text.Trim();
 
-        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
-            string.IsNullOrEmpty(startDateText) || string.IsNullOrEmpty(hourlyWageText))
+        if (string.IsNullOrEmpty(inputFirstName) || string.IsNullOrEmpty(inputLastName) ||
+            string.IsNullOrEmpty(inputStartDateText) || string.IsNullOrEmpty(inputHourlyWageText))
         {
             MessageBox.Show("Please fill in all fields.");
             return;
         }
 
-        if (!firstName.All(char.IsLetter) || !lastName.All(char.IsLetter))
+        if (!inputFirstName.All(char.IsLetter) || !inputLastName.All(char.IsLetter))
         {
             MessageBox.Show("First and Last Name must contain only letters.");
             return;
         }
 
-        DateTime startDate;
-        if (!DateTime.TryParse(startDateText, out startDate))
+        if (!DateTime.TryParse(inputStartDateText, out DateTime startDate))
         {
             MessageBox.Show("Please enter a valid date.");
             return;
         }
 
-        decimal hourlyWage;
-        if (!decimal.TryParse(hourlyWageText, out hourlyWage))
+        if (!decimal.TryParse(inputHourlyWageText, out decimal hourlyWage))
         {
             MessageBox.Show("Please enter a valid hourly wage.");
             return;
         }
 
-        Contractor newContractor = new Contractor(firstName, lastName, startDate, hourlyWage);
-        contractorList.Add(newContractor);
+        Contractor newContractor = new Contractor(inputFirstName, inputLastName, startDate, hourlyWage);
+        recruitmentSystem.AddContractor(newContractor);
         ContractorList.Items.Add(newContractor);
 
         MessageBox.Show("Contractor added!");
@@ -98,7 +95,7 @@ JobList.Items.Add(...)
 
         if (selectedContractor != null)
         {
-            contractorList.Remove(selectedContractor);
+            recruitmentSystem.RemoveContractor(selectedContractor);
             ContractorList.Items.Remove(selectedContractor);
             ContractorActionsExpander.IsExpanded = false;
             ContractorListExpander.IsExpanded = true;
@@ -113,7 +110,7 @@ JobList.Items.Add(...)
     {
         ContractorList.Items.Clear();
 
-        foreach (Contractor contractor in contractorList)
+        foreach (Contractor contractor in recruitmentSystem.GetAllContractors())
         {
             ContractorList.Items.Add(contractor);
         }
@@ -131,14 +128,9 @@ JobList.Items.Add(...)
     {
         ContractorList.Items.Clear();
 
-        foreach (Contractor contractor in contractorList)
+        foreach (Contractor contractor in recruitmentSystem.GetAvailableContractors())
         {
-            bool isAssigned = jobList.Any(job => job.ContractorAssigned == contractor);
-
-            if (!isAssigned)
-            {
-                ContractorList.Items.Add(contractor);
-            }
+            ContractorList.Items.Add(contractor);
         }
 
         ContractorActionsExpander.IsExpanded = false;
@@ -162,15 +154,14 @@ JobList.Items.Add(...)
             return;
         }
 
-        decimal cost;
-        if (!decimal.TryParse(costText, out cost))
+        if (!decimal.TryParse(costText, out decimal cost))
         {
             MessageBox.Show("Please enter a valid cost.");
             return;
         }
 
         Job newJob = new Job(title, selectedDate.Value, cost);
-        jobList.Add(newJob);
+        recruitmentSystem.AddJob(newJob);
         JobList.Items.Add(newJob);
 
         MessageBox.Show("Job added!");
@@ -194,14 +185,13 @@ JobList.Items.Add(...)
             return;
         }
 
-        if (selectedJob.ContractorAssigned != null)
+        bool success = recruitmentSystem.AssignJob(selectedJob, selectedContractor);
+
+        if (!success)
         {
-            MessageBox.Show("This job is already assigned to another contractor.");
+            MessageBox.Show("This job is already assigned.");
             return;
         }
-
-        selectedJob.ContractorAssigned = selectedContractor;
-        selectedJob.Completed = false;
 
         int index = JobList.Items.IndexOf(selectedJob);
         if (index >= 0)
@@ -235,9 +225,8 @@ JobList.Items.Add(...)
         }
 
         Contractor contractorToReturn = selectedJob.ContractorAssigned;
-        selectedJob.Completed = true;
-        selectedJob.ContractorAssigned = null;
 
+        recruitmentSystem.CompleteJob(selectedJob);
         JobList.Items.Remove(selectedJob);
 
         if (contractorToReturn != null && !ContractorList.Items.Contains(contractorToReturn))
@@ -255,7 +244,7 @@ JobList.Items.Add(...)
     {
         JobList.Items.Clear();
 
-        foreach (Job job in jobList)
+        foreach (Job job in recruitmentSystem.GetAllJobs())
         {
             JobList.Items.Add(job);
         }
@@ -273,12 +262,9 @@ JobList.Items.Add(...)
     {
         JobList.Items.Clear();
 
-        foreach (Job job in jobList)
+        foreach (Job job in recruitmentSystem.GetUnassignedJobs())
         {
-            if (job.ContractorAssigned == null)
-            {
-                JobList.Items.Add(job);
-            }
+            JobList.Items.Add(job);
         }
 
         JobActionsExpander.IsExpanded = false;
@@ -294,11 +280,8 @@ JobList.Items.Add(...)
     {
         JobList.Items.Clear();
 
-        decimal minCost;
-        decimal maxCost;
-
-        bool hasMin = decimal.TryParse(MinCostInput.Text.Trim(), out minCost);
-        bool hasMax = decimal.TryParse(MaxCostInput.Text.Trim(), out maxCost);
+        bool hasMin = decimal.TryParse(MinCostInput.Text.Trim(), out decimal minCost);
+        bool hasMax = decimal.TryParse(MaxCostInput.Text.Trim(), out decimal maxCost);
 
         if (!hasMin && !hasMax)
         {
@@ -306,18 +289,14 @@ JobList.Items.Add(...)
             return;
         }
 
-        foreach (Job job in jobList)
+        var jobs = recruitmentSystem.GetJobsByCost(
+            hasMin ? minCost : (decimal?)null,
+            hasMax ? maxCost : (decimal?)null
+        );
+
+        foreach (Job job in jobs)
         {
-            bool showJob = true;
-
-            if (hasMin && job.Cost < minCost)
-                showJob = false;
-
-            if (hasMax && job.Cost > maxCost)
-                showJob = false;
-
-            if (showJob)
-                JobList.Items.Add(job);
+            JobList.Items.Add(job);
         }
 
         JobActionsExpander.IsExpanded = false;

@@ -12,7 +12,7 @@ namespace MCJRecruitmentApp
         public DateTime Date { get; set; }
         public decimal Cost { get; set; }
         public bool Completed { get; set; }
-        public Contractor ContractorAssigned { get; set; }
+        public Contractor? ContractorAssigned { get; set; }
 
         public Job(string title, DateTime date, decimal cost)
         {

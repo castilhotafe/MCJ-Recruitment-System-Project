@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace MCJRecruitmentApp
 {
-    public class RecruitmentSystem
+    public record RecruitmentSystem(List<Contractor> Contractors, List<Job> Jobs)
     {
-        public List<Contractor> Contractors { get; private set; }
-        public List<Job> Jobs { get; private set; }
+        public List<Contractor> Contractors { get; private set; } = Contractors;
+        public List<Job> Jobs { get; private set; } = Jobs;
 
-        public RecruitmentSystem()
+        public RecruitmentSystem() : this(new List<Contractor>(), new List<Job>())
         {
-            Contractors = new List<Contractor>();
-            Jobs = new List<Job>();
         }
 
         public void AddContractor(Contractor contractor)

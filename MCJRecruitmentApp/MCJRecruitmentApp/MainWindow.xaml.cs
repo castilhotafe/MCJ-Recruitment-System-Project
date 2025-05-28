@@ -193,10 +193,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        int index = JobList.Items.IndexOf(selectedJob);
-        if (index >= 0)
+        JobList.Items.Clear();
+        foreach (Job job in recruitmentSystem.GetAllJobs())
         {
-            JobList.Items[index] = selectedJob;
+            JobList.Items.Add(job);
         }
 
         ContractorList.Items.Remove(selectedContractor);

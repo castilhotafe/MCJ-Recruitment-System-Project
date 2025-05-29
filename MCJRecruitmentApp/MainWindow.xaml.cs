@@ -164,6 +164,12 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (cost < 0)
+        {
+            MessageBox.Show("Cost cannot be negative");
+            return;
+        }
+
         Job newJob = new Job(title, selectedDate.Value, cost);
         recruitmentSystem.AddJob(newJob);
         JobList.Items.Add(newJob);

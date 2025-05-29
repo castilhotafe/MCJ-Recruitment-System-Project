@@ -37,6 +37,10 @@ public partial class MainWindow : Window
     */
 
     private RecruitmentSystem recruitmentSystem = new RecruitmentSystem();
+    
+    /// <summary>
+    /// Main Window Constructor
+    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
@@ -91,7 +95,7 @@ public partial class MainWindow : Window
 
     private void RemoveContractor_Click(object sender, RoutedEventArgs e)
     {
-        Contractor selectedContractor = ContractorList.SelectedItem as Contractor;
+        Contractor? selectedContractor = ContractorList.SelectedItem as Contractor;
 
         if (selectedContractor != null)
         {
@@ -176,8 +180,8 @@ public partial class MainWindow : Window
 
     private void AssignJobButton_Click(object sender, RoutedEventArgs e)
     {
-        Job selectedJob = JobList.SelectedItem as Job;
-        Contractor selectedContractor = ContractorList.SelectedItem as Contractor;
+        Job? selectedJob = JobList.SelectedItem as Job;
+        Contractor? selectedContractor = ContractorList.SelectedItem as Contractor;
 
         if (selectedJob == null || selectedContractor == null)
         {
@@ -210,7 +214,7 @@ public partial class MainWindow : Window
 
     private void CompleteJobButton_Click(object sender, RoutedEventArgs e)
     {
-        Job selectedJob = JobList.SelectedItem as Job;
+        Job? selectedJob = JobList.SelectedItem as Job;
 
         if (selectedJob == null)
         {
@@ -224,7 +228,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        Contractor contractorToReturn = selectedJob.ContractorAssigned;
+        Contractor? contractorToReturn = selectedJob.ContractorAssigned;
 
         recruitmentSystem.CompleteJob(selectedJob);
         JobList.Items.Remove(selectedJob);

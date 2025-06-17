@@ -78,6 +78,12 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (hourlyWage < 0)
+        {
+            MessageBox.Show("Hourly wage cannot be negative.");
+            return;
+        }
+
         Contractor newContractor = new Contractor(inputFirstName, inputLastName, startDate, hourlyWage);
         recruitmentSystem.AddContractor(newContractor);
         ContractorList.Items.Add(newContractor);
@@ -99,8 +105,21 @@ public partial class MainWindow : Window
 
         if (selectedContractor != null)
         {
+            foreach (Job job in recruitmentSystem.GetAllJobs())
+            {
+                if (job.ContractorAssigned == selectedContractor)
+                {
+                    job.ContractorAssigned = null; 
+                    job.Completed = false;         
+                }
+            }
             recruitmentSystem.RemoveContractor(selectedContractor);
             ContractorList.Items.Remove(selectedContractor);
+            JobList.Items.Clear();
+            foreach (Job job in recruitmentSystem.GetAllJobs())
+            {
+                JobList.Items.Add(job);
+            }
             ContractorActionsExpander.IsExpanded = false;
             ContractorListExpander.IsExpanded = true;
         }

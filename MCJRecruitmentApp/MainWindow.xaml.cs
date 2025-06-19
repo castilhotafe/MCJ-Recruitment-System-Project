@@ -46,43 +46,23 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void AddContractor_Click(object sender, RoutedEventArgs e)
+    public void AddContractor_Click(object sender, RoutedEventArgs e)
     {
         string inputFirstName = FirstNameInput.Text.Trim().ToUpper();
         string inputLastName = LastNameInput.Text.Trim().ToUpper();
         string inputStartDateText = StartDateInput.Text.Trim();
         string inputHourlyWageText = HourlyWageInput.Text.Trim();
 
-        if (string.IsNullOrEmpty(inputFirstName) || string.IsNullOrEmpty(inputLastName) ||
-            string.IsNullOrEmpty(inputStartDateText) || string.IsNullOrEmpty(inputHourlyWageText))
+        string result = recruitmentSystem.VerifyInputs(inputFirstName, inputLastName, inputStartDateText, inputHourlyWageText);
+
+        if (result != null)
         {
-            MessageBox.Show("Please fill in all fields.");
+            MessageBox.Show(result);
             return;
         }
 
-        if (!inputFirstName.All(char.IsLetter) || !inputLastName.All(char.IsLetter))
-        {
-            MessageBox.Show("First and Last Name must contain only letters.");
-            return;
-        }
-
-        if (!DateTime.TryParse(inputStartDateText, out DateTime startDate))
-        {
-            MessageBox.Show("Please enter a valid date.");
-            return;
-        }
-
-        if (!decimal.TryParse(inputHourlyWageText, out decimal hourlyWage))
-        {
-            MessageBox.Show("Please enter a valid hourly wage.");
-            return;
-        }
-
-        if (hourlyWage < 0)
-        {
-            MessageBox.Show("Hourly wage cannot be negative.");
-            return;
-        }
+        DateTime startDate = DateTime.Parse(StartDateInput.Text);
+        decimal hourlyWage = decimal.Parse(HourlyWageInput.Text);
 
         Contractor newContractor = new Contractor(inputFirstName, inputLastName, startDate, hourlyWage);
         recruitmentSystem.AddContractor(newContractor);
@@ -105,14 +85,6 @@ public partial class MainWindow : Window
 
         if (selectedContractor != null)
         {
-            foreach (Job job in recruitmentSystem.GetAllJobs())
-            {
-                if (job.ContractorAssigned == selectedContractor)
-                {
-                    job.ContractorAssigned = null; 
-                    job.Completed = false;         
-                }
-            }
             recruitmentSystem.RemoveContractor(selectedContractor);
             ContractorList.Items.Remove(selectedContractor);
             JobList.Items.Clear();

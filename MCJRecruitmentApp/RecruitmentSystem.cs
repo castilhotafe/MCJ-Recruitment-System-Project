@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MCJRecruitmentApp
 {
@@ -58,6 +59,14 @@ namespace MCJRecruitmentApp
         /// <param name="contractor">The object to be removed</param>
         public void RemoveContractor(Contractor contractor)
         {
+            foreach (Job job in GetAllJobs())
+            {
+                if (job.ContractorAssigned == contractor)
+                {
+                    job.ContractorAssigned = null;
+                    job.Completed = false;
+                }
+            }
             Contractors.Remove(contractor);
         }
 
@@ -220,6 +229,37 @@ namespace MCJRecruitmentApp
 
             // Return the final list with all matching jobs
             return filteredJobs;
+        }
+
+        public string VerifyInputs(string inputFirstName, string inputLastName, string inputStartDateText, string inputHourlyWageText)
+        {
+            if (string.IsNullOrEmpty(inputFirstName) || string.IsNullOrEmpty(inputLastName) ||
+           string.IsNullOrEmpty(inputStartDateText) || string.IsNullOrEmpty(inputHourlyWageText))
+            {
+                return "Please fill in all fields.";
+            }
+
+            if (!inputFirstName.All(char.IsLetter) || !inputLastName.All(char.IsLetter))
+            {
+                return "First and Last Name must contain only letters.";
+            }
+
+            if (!DateTime.TryParse(inputStartDateText, out DateTime startDate))
+            {
+                return "Please enter a valid date.";
+            }
+
+            if (!decimal.TryParse(inputHourlyWageText, out decimal hourlyWage))
+            {
+                return "Please enter a valid hourly wage.";
+            }
+
+            if (hourlyWage < 0)
+            {
+                return "Hourly wage cannot be negative.";
+            }
+
+            return null;
         }
     }
 }

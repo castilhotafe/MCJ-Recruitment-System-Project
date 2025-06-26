@@ -46,266 +46,187 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Adds a contractor after validating inputs.
+    /// </summary>
     public void AddContractor_Click(object sender, RoutedEventArgs e)
     {
-        string inputFirstName = FirstNameInput.Text.Trim().ToUpper();
-        string inputLastName = LastNameInput.Text.Trim().ToUpper();
-        string inputStartDateText = StartDateInput.Text.Trim();
-        string inputHourlyWageText = HourlyWageInput.Text.Trim();
+        string first = FirstNameInput.Text.Trim().ToUpper();
+        string last = LastNameInput.Text.Trim().ToUpper();
+        string date = StartDateInput.Text.Trim();
+        string wage = HourlyWageInput.Text.Trim();
 
-        string result = recruitmentSystem.VerifyInputs(inputFirstName, inputLastName, inputStartDateText, inputHourlyWageText);
+        string msg = recruitmentSystem.VerifyInputs_AddContractor(first, last, date, wage);
+        if (msg != null) { MessageBox.Show(msg); return; }
 
-        if (result != null)
-        {
-            MessageBox.Show(result);
-            return;
-        }
+        DateTime startDate = DateTime.Parse(date);
+        decimal hourlyWage = decimal.Parse(wage);
 
-        DateTime startDate = DateTime.Parse(StartDateInput.Text);
-        decimal hourlyWage = decimal.Parse(HourlyWageInput.Text);
-
-        Contractor newContractor = new Contractor(inputFirstName, inputLastName, startDate, hourlyWage);
-        recruitmentSystem.AddContractor(newContractor);
-        ContractorList.Items.Add(newContractor);
+        Contractor c = new Contractor(first, last, startDate, hourlyWage);
+        recruitmentSystem.AddContractor(c);
+        ContractorList.Items.Add(c);
 
         MessageBox.Show("Contractor added!");
+        FirstNameInput.Text = LastNameInput.Text = StartDateInput.Text = HourlyWageInput.Text = "";
+        ContractorActionsExpander.IsExpanded = false;
+        ContractorListExpander.IsExpanded = true;
+    }
 
-        FirstNameInput.Text = "";
-        LastNameInput.Text = "";
-        StartDateInput.Text = "";
-        HourlyWageInput.Text = "";
+    /// <summary>
+    /// Removes a contractor and updates job list.
+    /// </summary>
+    private void RemoveContractor_Click(object sender, RoutedEventArgs e)
+    {
+        Contractor? c = ContractorList.SelectedItem as Contractor;
+        if (c == null) { MessageBox.Show("Please select a contractor to remove."); return; }
+
+        recruitmentSystem.RemoveContractor(c);
+        ContractorList.Items.Remove(c);
+
+        JobList.Items.Clear();
+        foreach (Job j in recruitmentSystem.GetAllJobs()) JobList.Items.Add(j);
 
         ContractorActionsExpander.IsExpanded = false;
         ContractorListExpander.IsExpanded = true;
     }
 
-    private void RemoveContractor_Click(object sender, RoutedEventArgs e)
-    {
-        Contractor? selectedContractor = ContractorList.SelectedItem as Contractor;
-
-        if (selectedContractor != null)
-        {
-            recruitmentSystem.RemoveContractor(selectedContractor);
-            ContractorList.Items.Remove(selectedContractor);
-            JobList.Items.Clear();
-            foreach (Job job in recruitmentSystem.GetAllJobs())
-            {
-                JobList.Items.Add(job);
-            }
-            ContractorActionsExpander.IsExpanded = false;
-            ContractorListExpander.IsExpanded = true;
-        }
-        else
-        {
-            MessageBox.Show("Please select a contractor to remove.");
-        }
-    }
-
+    /// <summary>
+    /// Displays all contractors.
+    /// </summary>
     private void GetContractorsButton_Click(object sender, RoutedEventArgs e)
     {
         ContractorList.Items.Clear();
-
-        foreach (Contractor contractor in recruitmentSystem.GetAllContractors())
-        {
-            ContractorList.Items.Add(contractor);
-        }
+        foreach (var c in recruitmentSystem.GetAllContractors()) ContractorList.Items.Add(c);
 
         ContractorActionsExpander.IsExpanded = false;
         ContractorListExpander.IsExpanded = true;
-
-        if (ContractorList.Items.Count == 0)
-        {
-            MessageBox.Show("No contractors found.");
-        }
+        if (ContractorList.Items.Count == 0) MessageBox.Show("No contractors found.");
     }
 
+    /// <summary>
+    /// Displays available (unassigned) contractors.
+    /// </summary>
     private void GetAvailableContractorsButton_Click(object sender, RoutedEventArgs e)
     {
         ContractorList.Items.Clear();
-
-        foreach (Contractor contractor in recruitmentSystem.GetAvailableContractors())
-        {
-            ContractorList.Items.Add(contractor);
-        }
+        foreach (var c in recruitmentSystem.GetAvailableContractors()) ContractorList.Items.Add(c);
 
         ContractorActionsExpander.IsExpanded = false;
         ContractorListExpander.IsExpanded = true;
-
-        if (ContractorList.Items.Count == 0)
-        {
-            MessageBox.Show("No available contractors found.");
-        }
+        if (ContractorList.Items.Count == 0) MessageBox.Show("No available contractors found.");
     }
 
+    /// <summary>
+    /// Adds a new job after validating inputs.
+    /// </summary>
     private void AddJobButton_Click(object sender, RoutedEventArgs e)
     {
         string title = JobTitleInput.Text.Trim().ToUpper();
-        string costText = JobCostInput.Text.Trim();
-        DateTime? selectedDate = JobDateInput.SelectedDate;
+        string costT = JobCostInput.Text.Trim();
+        DateTime? dt = JobDateInput.SelectedDate;
 
-        if (string.IsNullOrEmpty(title) || selectedDate == null || string.IsNullOrEmpty(costText))
-        {
-            MessageBox.Show("Please fill in all job fields.");
-            return;
-        }
+        string msg = recruitmentSystem.VerifyInputs_AddJob(title, costT, dt);
+        if (msg != null) { MessageBox.Show(msg); return; }
 
-        if (!decimal.TryParse(costText, out decimal cost))
-        {
-            MessageBox.Show("Please enter a valid cost.");
-            return;
-        }
-
-        if (cost < 0)
-        {
-            MessageBox.Show("Cost cannot be negative");
-            return;
-        }
-
-        Job newJob = new Job(title, selectedDate.Value, cost);
-        recruitmentSystem.AddJob(newJob);
-        JobList.Items.Add(newJob);
+        Job job = new Job(title, dt!.Value, decimal.Parse(costT));
+        recruitmentSystem.AddJob(job);
+        JobList.Items.Add(job);
 
         MessageBox.Show("Job added!");
-
-        JobTitleInput.Text = "";
-        JobCostInput.Text = "";
+        JobTitleInput.Text = JobCostInput.Text = "";
         JobDateInput.SelectedDate = null;
-
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
     }
 
+    /// <summary>
+    /// Assigns a contractor to a job after validation.
+    /// </summary>
     private void AssignJobButton_Click(object sender, RoutedEventArgs e)
     {
-        Job? selectedJob = JobList.SelectedItem as Job;
-        Contractor? selectedContractor = ContractorList.SelectedItem as Contractor;
+        Job? j = JobList.SelectedItem as Job;
+        Contractor? c = ContractorList.SelectedItem as Contractor;
 
-        if (selectedJob == null || selectedContractor == null)
-        {
-            MessageBox.Show("Please select a job and a contractor to assign.");
-            return;
-        }
+        string msg = recruitmentSystem.VerifyInputs_AssignJob(j, c);
+        if (msg != null) { MessageBox.Show(msg); return; }
 
-        bool success = recruitmentSystem.AssignJob(selectedJob, selectedContractor);
-
-        if (!success)
-        {
-            MessageBox.Show("This job is already assigned.");
-            return;
-        }
+        recruitmentSystem.AssignJob(j!, c!);
 
         JobList.Items.Clear();
-        foreach (Job job in recruitmentSystem.GetAllJobs())
-        {
-            JobList.Items.Add(job);
-        }
+        foreach (var job in recruitmentSystem.GetAllJobs()) JobList.Items.Add(job);
 
-        ContractorList.Items.Remove(selectedContractor);
-        ContractorList.Items.Add(selectedContractor);
+        ContractorList.Items.Remove(c);
+        ContractorList.Items.Add(c);
 
-        MessageBox.Show($"Contractor {selectedContractor.FirstName} {selectedContractor.LastName} assigned to job {selectedJob.Title}.");
-
+        MessageBox.Show($"Contractor {c!.FirstName} {c.LastName} assigned to job {j!.Title}.");
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
     }
 
+    /// <summary>
+    /// Marks a job as complete after validation.
+    /// </summary>
     private void CompleteJobButton_Click(object sender, RoutedEventArgs e)
     {
-        Job? selectedJob = JobList.SelectedItem as Job;
+        Job? j = JobList.SelectedItem as Job;
+        string msg = recruitmentSystem.VerifyInputs_CompleteJob(j);
+        if (msg != null) { MessageBox.Show(msg); return; }
 
-        if (selectedJob == null)
-        {
-            MessageBox.Show("Please select a job to complete.");
-            return;
-        }
+        Contractor? backToPool = j!.ContractorAssigned;
+        recruitmentSystem.CompleteJob(j);
+        JobList.Items.Remove(j);
 
-        if (selectedJob.Completed)
-        {
-            MessageBox.Show("This job is already completed.");
-            return;
-        }
+        if (backToPool != null && !ContractorList.Items.Contains(backToPool))
+            ContractorList.Items.Add(backToPool);
 
-        Contractor? contractorToReturn = selectedJob.ContractorAssigned;
-
-        recruitmentSystem.CompleteJob(selectedJob);
-        JobList.Items.Remove(selectedJob);
-
-        if (contractorToReturn != null && !ContractorList.Items.Contains(contractorToReturn))
-        {
-            ContractorList.Items.Add(contractorToReturn);
-        }
-
-        MessageBox.Show($"Job '{selectedJob.Title}' completed!");
-
+        MessageBox.Show($"Job '{j.Title}' completed!");
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
     }
 
+    /// <summary>
+    /// Displays all jobs.
+    /// </summary>
     private void GetJobsButton_Click(object sender, RoutedEventArgs e)
     {
         JobList.Items.Clear();
-
-        foreach (Job job in recruitmentSystem.GetAllJobs())
-        {
-            JobList.Items.Add(job);
-        }
+        foreach (var j in recruitmentSystem.GetAllJobs()) JobList.Items.Add(j);
 
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
-
-        if (JobList.Items.Count == 0)
-        {
-            MessageBox.Show("No jobs found.");
-        }
+        if (JobList.Items.Count == 0) MessageBox.Show("No jobs found.");
     }
 
+    /// <summary>
+    /// Displays unassigned jobs.
+    /// </summary>
     private void GetUnassignedJobsButton_Click(object sender, RoutedEventArgs e)
     {
         JobList.Items.Clear();
-
-        foreach (Job job in recruitmentSystem.GetUnassignedJobs())
-        {
-            JobList.Items.Add(job);
-        }
+        foreach (var j in recruitmentSystem.GetUnassignedJobs()) JobList.Items.Add(j);
 
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
-
-        if (JobList.Items.Count == 0)
-        {
-            MessageBox.Show("No unassigned jobs found.");
-        }
+        if (JobList.Items.Count == 0) MessageBox.Show("No unassigned jobs found.");
     }
 
+    /// <summary>
+    /// Filters jobs by cost after validating inputs.
+    /// </summary>
     private void GetJobByCostButton_Click(object sender, RoutedEventArgs e)
     {
+        string msg = recruitmentSystem.VerifyInputs_FilterByCost(
+            MinCostInput.Text.Trim(), MaxCostInput.Text.Trim(),
+            out decimal? min, out decimal? max);
+
+        if (msg != null) { MessageBox.Show(msg); return; }
+
         JobList.Items.Clear();
-
-        bool hasMin = decimal.TryParse(MinCostInput.Text.Trim(), out decimal minCost);
-        bool hasMax = decimal.TryParse(MaxCostInput.Text.Trim(), out decimal maxCost);
-
-        if (!hasMin && !hasMax)
-        {
-            MessageBox.Show("Please enter at least one valid cost.");
-            return;
-        }
-
-        var jobs = recruitmentSystem.GetJobsByCost(
-            hasMin ? minCost : (decimal?)null,
-            hasMax ? maxCost : (decimal?)null
-        );
-
-        foreach (Job job in jobs)
-        {
-            JobList.Items.Add(job);
-        }
+        foreach (var j in recruitmentSystem.GetJobsByCost(min, max)) JobList.Items.Add(j);
 
         JobActionsExpander.IsExpanded = false;
         JobListExpander.IsExpanded = true;
-
-        if (JobList.Items.Count == 0)
-        {
-            MessageBox.Show("No jobs found in the selected cost range.");
-        }
+        if (JobList.Items.Count == 0) MessageBox.Show("No jobs found in the selected cost range.");
     }
 }
+
